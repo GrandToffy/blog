@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Posts</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'blog/styles.css' %}">
+</head>
+<body>
+    <h1>Посты</h1>
+    <ul>
+        {% for post in page_obj %}
+            <li>{{ post.title }}</li>
+        {% endfor %}
+    </ul>
+
+    <form method="get">
+        <label for="num_items">Элементов на странице:</label>
+        <select name="num_items" id="num_items" onchange="this.form.submit()">
+            <option value="5" {% if request.GET.num_items == '5' %}selected{% endif %}>5</option>
+            <option value="10" {% if request.GET.num_items == '10' %}selected{% endif %}>10</option>
+            <option value="20" {% if request.GET.num_items == '20' %}selected{% endif %}>20</option>
+        </select>
+    </form>
+
+    <div class="pagination">
+        <ul>
+            {% if page_obj.has_previous %}
+                <li><a href="?page=1&num_items={{ request.GET.num_items }}">&laquo; first</a></li>
+                <li><a href="?page={{ page_obj.previous_page_number }}&num_items={{ request.GET.num_items }}">previous</a></li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="active"><span>{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li><a href="?page={{ num }}&num_items={{ request.GET.num_items }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li><a href="?page={{ page_obj.next_page_number }}&num_items={{ request.GET.num_items }}">next</a></li>
+                <li><a href="?page={{ page_obj.paginator.num_pages }}&num_items={{ request.GET.num_items }}">last &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</body>
+</html>
